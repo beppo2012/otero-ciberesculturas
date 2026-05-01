@@ -1,0 +1,1447 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aurea — Alejandro Otero · Ciber Esculturas 1987</title>
+<meta name="description" content="Aurea, ciber escultura virtual de Alejandro Otero, creada en el Centro Científico de IBM de Venezuela en 1987. Reconstruida en realidad aumentada, 2025.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+
+<style>
+/* ── VARIABLES ── */
+:root {
+  --bg:       #07070D;
+  --bg2:      #0D0D1C;
+  --bg3:      #111128;
+  --border:   #1E1E42;
+  --border2:  #2A2A55;
+  --accent:   #C8BFF8;
+  --accent2:  #9B8FE8;
+  --gold:     #F5E9C4;
+  --gold2:    #D4AF7A;
+  --text:     #F0EEF8;
+  --text2:    rgba(240,238,248,0.55);
+  --text3:    rgba(240,238,248,0.28);
+  --mono:     'DM Mono', monospace;
+  --serif:    'Cormorant Garamond', Georgia, serif;
+}
+
+/* ── RESET ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--serif);
+  font-size: 18px;
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+/* ── GRAIN OVERLAY ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0.6;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 20px 48px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(to bottom, rgba(7,7,13,0.95) 0%, transparent 100%);
+  backdrop-filter: blur(0px);
+}
+.nav-logo {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  color: var(--text3);
+  text-decoration: none;
+  text-transform: uppercase;
+}
+.nav-logo span { color: var(--accent); }
+.nav-right {
+  display: flex;
+  gap: 32px;
+  align-items: center;
+}
+.nav-link {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: var(--text3);
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: color 0.3s;
+}
+.nav-link:hover { color: var(--accent); }
+.nav-num {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text3);
+  letter-spacing: 0.08em;
+}
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 0 48px 80px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  background: 
+    radial-gradient(ellipse 60% 50% at 70% 40%, rgba(200,191,248,0.06) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 60% at 20% 70%, rgba(245,233,196,0.04) 0%, transparent 60%),
+    radial-gradient(ellipse 80% 80% at 50% 50%, rgba(13,13,28,0.8) 0%, var(--bg) 100%);
+}
+
+/* Placeholder para la imagen/video de la escultura */
+.hero-media {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.hero-media-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #0D0D1C 0%, #111128 50%, #0D0D1C 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+.hero-media img,
+.hero-media video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.6;
+}
+.placeholder-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--text3);
+  text-transform: uppercase;
+}
+.placeholder-icon {
+  width: 48px;
+  height: 48px;
+  border: 0.5px solid var(--border2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Geometric decorations */
+.geo-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 0.5px solid;
+  pointer-events: none;
+}
+.geo-ring-1 {
+  width: 500px; height: 500px;
+  top: 50%; left: 60%;
+  transform: translate(-50%, -50%);
+  border-color: rgba(200,191,248,0.06);
+  animation: rotate-slow 40s linear infinite;
+}
+.geo-ring-2 {
+  width: 320px; height: 320px;
+  top: 50%; left: 60%;
+  transform: translate(-50%, -50%);
+  border-color: rgba(200,191,248,0.08);
+  animation: rotate-slow 28s linear infinite reverse;
+}
+.geo-ring-3 {
+  width: 160px; height: 160px;
+  top: 50%; left: 60%;
+  transform: translate(-50%, -50%);
+  border-color: rgba(200,191,248,0.12);
+}
+@keyframes rotate-slow {
+  from { transform: translate(-50%,-50%) rotate(0deg); }
+  to   { transform: translate(-50%,-50%) rotate(360deg); }
+}
+
+.scan-line {
+  position: absolute;
+  left: 0; right: 0;
+  height: 0.5px;
+  background: linear-gradient(to right, transparent, rgba(200,191,248,0.15), transparent);
+  animation: scan 8s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes scan {
+  0%   { top: 20%; opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { top: 80%; opacity: 0; }
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 680px;
+}
+.hero-eyebrow {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  opacity: 0;
+  animation: fade-up 1s ease 0.3s forwards;
+}
+.hero-title {
+  font-size: clamp(56px, 8vw, 96px);
+  font-weight: 300;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  margin-bottom: 8px;
+  opacity: 0;
+  animation: fade-up 1s ease 0.5s forwards;
+}
+.hero-title em {
+  font-style: italic;
+  color: var(--gold);
+}
+.hero-subtitle {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: var(--text3);
+  text-transform: uppercase;
+  margin-bottom: 36px;
+  opacity: 0;
+  animation: fade-up 1s ease 0.7s forwards;
+}
+.hero-desc {
+  font-size: 16px;
+  color: var(--text2);
+  line-height: 1.75;
+  max-width: 480px;
+  margin-bottom: 40px;
+  opacity: 0;
+  animation: fade-up 1s ease 0.9s forwards;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  opacity: 0;
+  animation: fade-up 1s ease 1.1s forwards;
+}
+.btn-ar {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--accent);
+  color: var(--bg);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 14px 28px;
+  text-decoration: none;
+  border-radius: 2px;
+  transition: background 0.3s, transform 0.2s;
+}
+.btn-ar:hover {
+  background: var(--text);
+  transform: translateY(-1px);
+}
+/* ESTE es el enlace real al archivo .usdz — reemplazar href con la URL del archivo */
+.btn-ar-real {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--accent);
+  color: var(--bg);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 14px 28px;
+  text-decoration: none;
+  border-radius: 2px;
+  transition: background 0.3s, transform 0.2s;
+}
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 14px 28px;
+  text-decoration: none;
+  border: 0.5px solid var(--border2);
+  border-radius: 2px;
+  transition: border-color 0.3s, color 0.3s;
+}
+.btn-outline:hover {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.hero-scroll {
+  position: absolute;
+  bottom: 32px;
+  right: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  opacity: 0;
+  animation: fade-in 1s ease 1.5s forwards;
+}
+.scroll-line {
+  width: 0.5px;
+  height: 40px;
+  background: linear-gradient(to bottom, var(--accent), transparent);
+  animation: scroll-pulse 2s ease-in-out infinite;
+}
+@keyframes scroll-pulse {
+  0%, 100% { opacity: 0.4; transform: scaleY(1); }
+  50% { opacity: 1; transform: scaleY(1.2); }
+}
+.scroll-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: var(--text3);
+  text-transform: uppercase;
+  writing-mode: vertical-rl;
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ── SECCIONES COMUNES ── */
+section {
+  padding: 120px 48px;
+  position: relative;
+}
+.section-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.section-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 48px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.section-label::after {
+  content: '';
+  flex: 1;
+  max-width: 60px;
+  height: 0.5px;
+  background: var(--border2);
+}
+
+/* ── ARCHIVO 1987 ── */
+.archivo {
+  background: var(--bg);
+  border-top: 0.5px solid var(--border);
+}
+
+.archivo-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: start;
+}
+.archivo-text h2 {
+  font-size: clamp(32px, 4vw, 52px);
+  font-weight: 300;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  margin-bottom: 24px;
+}
+.archivo-text h2 em {
+  font-style: italic;
+  color: var(--accent);
+}
+.archivo-text p {
+  font-size: 16px;
+  color: var(--text2);
+  line-height: 1.8;
+  margin-bottom: 16px;
+}
+.archivo-meta {
+  margin-top: 36px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--border);
+}
+.meta-item {
+  background: var(--bg);
+  padding: 16px 20px;
+}
+.meta-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  color: var(--text3);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.meta-value {
+  font-size: 14px;
+  color: var(--text);
+  font-weight: 400;
+}
+.meta-value.accent { color: var(--accent); }
+
+/* Galería de fotos 1987 */
+.foto-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.foto-item {
+  aspect-ratio: 4/3;
+  background: var(--bg3);
+  border: 0.5px solid var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  transition: border-color 0.3s;
+}
+.foto-item:hover { border-color: var(--accent); }
+.foto-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.85;
+  transition: opacity 0.3s, transform 0.4s;
+}
+.foto-item:hover img {
+  opacity: 1;
+  transform: scale(1.03);
+}
+.foto-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.foto-placeholder-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  color: var(--text3);
+  text-transform: uppercase;
+}
+.foto-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(7,7,13,0.7) 0%, transparent 50%);
+  display: flex;
+  align-items: flex-end;
+  padding: 12px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.foto-item:hover .foto-overlay { opacity: 1; }
+.foto-caption {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--text);
+  text-transform: uppercase;
+}
+
+/* foto grande */
+.foto-item.large {
+  grid-column: 1 / -1;
+  aspect-ratio: 16/9;
+}
+
+/* ── REFLEXIÓN ── */
+.reflexion {
+  background: var(--bg2);
+  border-top: 0.5px solid var(--border);
+  border-bottom: 0.5px solid var(--border);
+}
+.reflexion-inner {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+.quote-mark {
+  font-size: 120px;
+  line-height: 0.6;
+  color: var(--border2);
+  font-family: var(--serif);
+  margin-bottom: 32px;
+  display: block;
+}
+.quote-text {
+  font-size: clamp(22px, 3vw, 36px);
+  font-weight: 300;
+  font-style: italic;
+  line-height: 1.6;
+  color: var(--text);
+  margin-bottom: 36px;
+  letter-spacing: -0.01em;
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.quote-source {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: var(--text3);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  display: block;
+}
+
+/* PLACEHOLDER: reemplazar con la reflexión real */
+.quote-placeholder {
+  display: inline-block;
+  border: 0.5px dashed var(--border2);
+  border-radius: 4px;
+  padding: 32px 40px;
+  font-size: 14px;
+  color: var(--text3);
+  font-family: var(--mono);
+  font-style: normal;
+  letter-spacing: 0.08em;
+  margin-bottom: 36px;
+  line-height: 1.8;
+  text-align: left;
+  max-width: 560px;
+}
+
+.quote-attr {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: var(--accent);
+  text-transform: uppercase;
+}
+.quote-attr span {
+  color: var(--text3);
+  margin: 0 12px;
+}
+
+/* ── RECONSTRUCCIÓN AR ── */
+.reconstruccion {
+  background: var(--bg);
+  border-top: 0.5px solid var(--border);
+}
+.rec-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+.rec-media {
+  position: relative;
+}
+.rec-media-frame {
+  aspect-ratio: 9/16;
+  background: var(--bg3);
+  border: 0.5px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+  max-width: 360px;
+  margin: 0 auto;
+}
+.rec-media-frame video,
+.rec-media-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.rec-media-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+.rec-media-placeholder p {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  color: var(--text3);
+  text-transform: uppercase;
+  text-align: center;
+  line-height: 2;
+}
+
+/* Coordenadas decorativas */
+.rec-coords {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: rgba(200,191,248,0.3);
+}
+.rec-tag {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  background: rgba(200,191,248,0.1);
+  border: 0.5px solid rgba(200,191,248,0.2);
+  border-radius: 2px;
+  padding: 4px 10px;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  text-transform: uppercase;
+}
+.rec-corner {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-color: rgba(200,191,248,0.25);
+  border-style: solid;
+  border-width: 0;
+}
+.rec-corner.tl { top: 8px; left: 8px; border-top-width: 1px; border-left-width: 1px; }
+.rec-corner.tr { top: 8px; right: 8px; border-top-width: 1px; border-right-width: 1px; }
+.rec-corner.bl { bottom: 8px; left: 8px; border-bottom-width: 1px; border-left-width: 1px; }
+.rec-corner.br { bottom: 8px; right: 8px; border-bottom-width: 1px; border-right-width: 1px; }
+
+.rec-text h2 {
+  font-size: clamp(28px, 3.5vw, 44px);
+  font-weight: 300;
+  line-height: 1.2;
+  margin-bottom: 24px;
+  letter-spacing: -0.01em;
+}
+.rec-text h2 em { font-style: italic; color: var(--gold); }
+.rec-text p {
+  font-size: 16px;
+  color: var(--text2);
+  line-height: 1.8;
+  margin-bottom: 16px;
+}
+
+/* instrucciones AR */
+.ar-instructions {
+  margin-top: 40px;
+  border: 0.5px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.ar-inst-header {
+  background: var(--bg3);
+  padding: 12px 20px;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  color: var(--accent);
+  text-transform: uppercase;
+  border-bottom: 0.5px solid var(--border);
+}
+.ar-inst-list {
+  padding: 0;
+  list-style: none;
+}
+.ar-inst-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 14px 20px;
+  border-bottom: 0.5px solid var(--border);
+  font-size: 14px;
+  color: var(--text2);
+}
+.ar-inst-item:last-child { border-bottom: none; }
+.ar-inst-n {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--accent);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* ── CONTEXTO ── */
+.contexto {
+  background: var(--bg2);
+  border-top: 0.5px solid var(--border);
+}
+.ctx-media {
+  width: 100%;
+  aspect-ratio: 16/9;
+  background: var(--bg3);
+  border: 0.5px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 40px;
+  position: relative;
+}
+.ctx-media video,
+.ctx-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.85;
+}
+.ctx-media-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: radial-gradient(ellipse at center, #0D0D1C 0%, #07070D 100%);
+}
+.ctx-media-placeholder p {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  color: var(--text3);
+  text-transform: uppercase;
+}
+.ctx-overlay-label {
+  position: absolute;
+  bottom: 20px;
+  left: 24px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: var(--text2);
+  text-transform: uppercase;
+}
+.ctx-caption {
+  font-size: 16px;
+  color: var(--text2);
+  line-height: 1.8;
+  max-width: 700px;
+  font-style: italic;
+}
+
+/* ── PARTICIPACIÓN ── */
+.participacion {
+  background: var(--bg);
+  border-top: 0.5px solid var(--border);
+}
+.part-box {
+  background: var(--bg2);
+  border: 0.5px solid var(--border2);
+  border-radius: 8px;
+  padding: 64px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.part-box::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 60% 40% at 50% 0%, rgba(200,191,248,0.04) 0%, transparent 70%);
+  pointer-events: none;
+}
+.part-title {
+  font-size: clamp(28px, 4vw, 48px);
+  font-weight: 300;
+  line-height: 1.2;
+  margin-bottom: 16px;
+  letter-spacing: -0.01em;
+}
+.part-title em { font-style: italic; color: var(--accent); }
+.part-sub {
+  font-size: 16px;
+  color: var(--text2);
+  line-height: 1.75;
+  max-width: 520px;
+  margin: 0 auto 48px;
+}
+
+.download-block {
+  background: var(--bg3);
+  border: 0.5px solid var(--border2);
+  border-radius: 6px;
+  padding: 24px 32px;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 40px;
+}
+.download-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  color: var(--text3);
+  text-transform: uppercase;
+}
+.download-filename {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--accent);
+  letter-spacing: 0.06em;
+}
+/* ENLACE REAL AL .usdz — reemplazar href con la URL correcta del archivo */
+.download-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--accent);
+  color: var(--bg);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 12px 24px;
+  text-decoration: none;
+  border-radius: 2px;
+  transition: background 0.3s;
+}
+.download-btn:hover { background: var(--text); }
+
+.hashtag-row {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+.hashtag {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text3);
+  letter-spacing: 0.06em;
+}
+.hashtag.primary { color: var(--accent2); }
+
+/* ── SERIE ── */
+.serie {
+  background: var(--bg2);
+  border-top: 0.5px solid var(--border);
+  padding: 80px 48px;
+}
+.serie-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.serie-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 40px;
+}
+.serie-title {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  color: var(--accent);
+  text-transform: uppercase;
+}
+.serie-count {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text3);
+  letter-spacing: 0.08em;
+}
+.serie-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+}
+.serie-item {
+  aspect-ratio: 1;
+  border-radius: 3px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  border: 0.5px solid var(--border);
+  background: var(--bg);
+  cursor: pointer;
+  text-decoration: none;
+  transition: border-color 0.3s, background 0.3s;
+  padding: 4px;
+}
+.serie-item:hover { border-color: var(--border2); background: var(--bg3); }
+.serie-item.active { border-color: var(--accent); background: rgba(200,191,248,0.06); }
+.serie-item.inactive { opacity: 0.35; cursor: default; }
+.serie-item-n {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--text2);
+}
+.serie-item.active .serie-item-n { color: var(--accent); }
+.serie-item-name {
+  font-size: 8px;
+  color: var(--text3);
+  text-align: center;
+  line-height: 1.2;
+  display: none;
+}
+
+/* ── FOOTER ── */
+footer {
+  background: var(--bg);
+  border-top: 0.5px solid var(--border);
+  padding: 48px 48px 40px;
+}
+.footer-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 32px;
+}
+.footer-left p {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: var(--text3);
+  line-height: 2;
+  text-transform: uppercase;
+}
+.footer-left p span { color: var(--text2); }
+.footer-right {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: var(--text3);
+  text-align: right;
+  line-height: 2;
+  text-transform: uppercase;
+}
+
+/* ── LIGHTBOX ── */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(7,7,13,0.96);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+  backdrop-filter: blur(8px);
+}
+.lightbox.open {
+  opacity: 1;
+  pointer-events: all;
+}
+.lightbox img {
+  max-width: 90vw;
+  max-height: 85vh;
+  object-fit: contain;
+  border: 0.5px solid var(--border2);
+}
+.lightbox-close {
+  position: absolute;
+  top: 32px;
+  right: 40px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: var(--text3);
+  cursor: pointer;
+  text-transform: uppercase;
+  background: none;
+  border: none;
+  transition: color 0.2s;
+}
+.lightbox-close:hover { color: var(--text); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  nav { padding: 16px 24px; }
+  .nav-right { gap: 20px; }
+  section { padding: 80px 24px; }
+  .hero { padding: 0 24px 60px; }
+  .archivo-grid { grid-template-columns: 1fr; gap: 48px; }
+  .rec-grid { grid-template-columns: 1fr; gap: 48px; }
+  .rec-media-frame { max-width: 280px; }
+  .part-box { padding: 40px 24px; }
+  .serie { padding: 60px 24px; }
+  .footer-inner { flex-direction: column; align-items: flex-start; }
+  .footer-right { text-align: left; }
+  .serie-grid { grid-template-columns: repeat(4, 1fr); }
+  .geo-ring-1, .geo-ring-2, .geo-ring-3 { display: none; }
+}
+
+/* ── SCROLL ANIMATIONS ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">Otero · <span>Ciber Esculturas</span></a>
+  <div class="nav-right">
+    <a href="#archivo" class="nav-link">Archivo</a>
+    <a href="#reflexion" class="nav-link">Reflexión</a>
+    <a href="#ar" class="nav-link">AR</a>
+    <a href="#participar" class="nav-link">Participar</a>
+    <span class="nav-num">01 / 13</span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" style="padding:0; min-height:100vh; position:relative;">
+  <!-- 
+    IMAGEN O VIDEO DE LA ESCULTURA EN CONTEXTO:
+    Reemplazar el bloque hero-media-placeholder con:
+    <img src="TU_IMAGEN.jpg" alt="Aurea en contexto">
+    o
+    <video autoplay muted loop playsinline src="TU_VIDEO.mp4"></video>
+  -->
+  <div class="hero-media">
+    <img src="img/aurea/aurea_ctx_01.jpeg" alt="Aurea sobre Caracas nocturna · El Ávila · 2025" style="width:100%;height:100%;object-fit:cover;opacity:0.5;">
+  </div>
+
+  <div class="hero-bg"></div>
+  <div class="geo-ring geo-ring-1"></div>
+  <div class="geo-ring geo-ring-2"></div>
+  <div class="geo-ring geo-ring-3"></div>
+  <div class="scan-line"></div>
+
+  <div class="hero-content" style="position:relative; z-index:2; padding: 0 48px 80px;">
+    <p class="hero-eyebrow">Ciber Escultura · 01 de 13 · IBM CADAM 1987</p>
+    <h1 class="hero-title"><em>Aurea</em></h1>
+    <p class="hero-subtitle">Alejandro Otero · Centro Científico IBM · Caracas</p>
+    <p class="hero-desc">
+      Creada en 1987 en el ciberespacio del Centro Científico de IBM de Venezuela. 
+      Existió solo en el espacio digital. Reconstruida en realidad aumentada 
+      y devuelta a Caracas — la ciudad donde nació.
+    </p>
+    <div class="hero-actions">
+      <!-- 
+        ENLACE AL ARCHIVO .usdz:
+        En iPhone, este enlace abre la escultura directamente en AR.
+        Reemplazar # con la URL real del archivo .usdz
+        Ejemplo: href="https://tudominio.com/ar/aurea.usdz"
+        rel="ar" activa AR nativa en iOS Safari
+      -->
+      <a href="ar/Aurea_AR.usdz" rel="ar" class="btn-ar">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <rect x="1" y="4" width="12" height="8" rx="1" stroke="currentColor" stroke-width="1"/>
+          <path d="M4 4V3a1 1 0 011-1h4a1 1 0 011 1v1" stroke="currentColor" stroke-width="1"/>
+          <circle cx="7" cy="8" r="1.5" fill="currentColor"/>
+        </svg>
+        Ver en realidad aumentada
+      </a>
+      <a href="#archivo" class="btn-outline">Explorar obra ↓</a>
+    </div>
+  </div>
+
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    <span class="scroll-label">Scroll</span>
+  </div>
+</section>
+
+<!-- ARCHIVO 1987 -->
+<section class="archivo" id="archivo">
+  <div class="section-inner">
+    <p class="section-label reveal">Capa 01 · Archivo histórico</p>
+    <div class="archivo-grid">
+      <div class="archivo-text reveal">
+        <h2>La escultura que<br>solo <em>existió</em><br>en el ciberespacio</h2>
+        <p>
+          En 1987, Alejandro Otero y Ana Blanco crearon <em>Aurea</em> en el Centro Científico 
+          de IBM de Venezuela usando el sistema CADAM y la estación gráfica IBM 5080. 
+          Era un objeto virtual — intangible pero informativamente rico.
+        </p>
+        <p>
+          Cuando IBM apagó su mainframe 370 alrededor de 1992, la obra desapareció. 
+          Lo que quedó fueron estas fotografías.
+        </p>
+
+        <div class="archivo-meta">
+          <div class="meta-item">
+            <p class="meta-label">Año</p>
+            <p class="meta-value">1987</p>
+          </div>
+          <div class="meta-item">
+            <p class="meta-label">Medio</p>
+            <p class="meta-value">Virtual · Digital</p>
+          </div>
+          <div class="meta-item">
+            <p class="meta-label">Sistema</p>
+            <p class="meta-value">IBM CADAM · 5080</p>
+          </div>
+          <div class="meta-item">
+            <p class="meta-label">Estado</p>
+            <p class="meta-value accent">Reconstruida · 2025</p>
+          </div>
+          <div class="meta-item">
+            <p class="meta-label">Fotografía</p>
+            <p class="meta-value">Nelson Garrido</p>
+          </div>
+          <div class="meta-item">
+            <p class="meta-label">Colección</p>
+            <p class="meta-value">Fundación Otero Pardo</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="foto-grid reveal">
+        <!-- Diapositiva original con escritura de Otero — documento más íntimo -->
+        <div class="foto-item large" onclick="openLightbox(this)">
+          <img src="img/aurea/aurea_slide.jpeg" alt="Aurea · diapositiva original · escritura de Alejandro Otero · 1987">
+          <div class="foto-overlay"><span class="foto-caption">Diapositiva original · escritura de Otero · 1987</span></div>
+        </div>
+
+        <!-- Vista frontal — cilindros dorados con anillo turquesa -->
+        <div class="foto-item" onclick="openLightbox(this)">
+          <img src="img/aurea/aurea_01.jpeg" alt="Aurea · vista frontal · IBM CADAM · 1987">
+          <div class="foto-overlay"><span class="foto-caption">Aurea · vista frontal · IBM 5080</span></div>
+        </div>
+
+        <!-- Vista lateral — arquitectura en capas horizontales -->
+        <div class="foto-item" onclick="openLightbox(this)">
+          <img src="img/aurea/aurea_02.jpeg" alt="Aurea · vista lateral · IBM CADAM · 1987">
+          <div class="foto-overlay"><span class="foto-caption">Aurea · vista lateral · perspectiva inesperada</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REFLEXIÓN -->
+<section class="reflexion" id="reflexion">
+  <div class="reflexion-inner reveal">
+    <span class="section-label" style="justify-content:center; margin-bottom:40px;">Capa 02 · La reflexión</span>
+
+    <!-- 
+      REFLEXIÓN:
+      Cuando tengas el texto, reemplaza el quote-placeholder con:
+      
+      Si es cita de Otero:
+      <blockquote class="quote-text">"[texto exacto de la cita]"</blockquote>
+      <p class="quote-attr">Alejandro Otero <span>·</span> Saludo al Siglo XXI</p>
+      
+      Si es reflexión de Ana Blanco:
+      <blockquote class="quote-text">"[texto de la reflexión]"</blockquote>
+      <p class="quote-attr">Ana Blanco <span>·</span> 2025</p>
+    -->
+    <span class="quote-mark">"</span>
+    <blockquote class="quote-text">
+      Un cambio de soporte o un campo de trabajo distinto&nbsp;... 
+      no representa un escollo mayor cuando tenemos básicamente 
+      entre las manos el sentimiento de lo que buscamos
+    </blockquote>
+    <p class="quote-attr">Alejandro Otero <span>·</span> Saludo al Siglo XXI</p>
+    <p class="quote-source" style="margin-top:10px; font-family:var(--mono); font-size:10px; letter-spacing:0.14em; color:var(--text3); text-transform:uppercase;">Centro Científico IBM · Caracas · 1987</p>
+  </div>
+</section>
+<section class="reconstruccion" id="ar">
+  <div class="section-inner">
+    <p class="section-label reveal">Capa 03 · Reconstrucción en realidad aumentada</p>
+    <div class="rec-grid">
+      <div class="rec-media reveal">
+        <div class="rec-media-frame" style="aspect-ratio:4/3; max-width:100%;">
+          <img src="img/aurea/aurea_rec_01.jpeg" alt="Aurea reconstruida · vista frontal · 2025">
+          <div class="rec-corner tl"></div>
+          <div class="rec-corner tr"></div>
+          <div class="rec-corner bl"></div>
+          <div class="rec-corner br"></div>
+          <span class="rec-coords">Reconstrucción · 2025</span>
+          <span class="rec-tag">3D · AR</span>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px;">
+          <div class="rec-media-frame" style="aspect-ratio:1/1; max-width:100%; cursor:pointer;" onclick="openLightbox(this)">
+            <img src="img/aurea/aurea_rec_02.jpeg" alt="Aurea reconstruida · vista aérea · 2025">
+            <div class="foto-overlay"><span class="foto-caption">Vista aérea</span></div>
+          </div>
+          <div class="rec-media-frame" style="aspect-ratio:1/1; max-width:100%; cursor:pointer;" onclick="openLightbox(this)">
+            <img src="img/aurea/aurea_rec_03.jpeg" alt="Aurea reconstruida · vista lateral · 2025">
+            <div class="foto-overlay"><span class="foto-caption">Vista lateral</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="rec-text reveal">
+        <h2>La obra que<br>perdimos, <em>devuelta</em><br>al espacio</h2>
+        <p>
+          La reconstrucción no es una simulación — es un objeto tridimensional real
+          con volumen, materiales y sombras propias. Puedes verlo desde todos los 
+          ángulos y colocarlo en cualquier espacio mediante realidad aumentada.
+        </p>
+        <p>
+          En 1987 Aurea era luminosa y etérea, líneas de luz sobre negro total. 
+          Hoy el mismo objeto revela su arquitectura interna: la estructura radial, 
+          los cilindros dorados, las capas horizontales que el original apenas insinuaba.
+        </p>
+        <p>
+          En iPhone, toca el botón de AR y la obra aparece en tu espacio.
+          En cualquier otro dispositivo, explora el modelo 3D en el navegador.
+        </p>
+
+        <div class="ar-instructions">
+          <div class="ar-inst-header">Cómo usar la realidad aumentada</div>
+          <ul class="ar-inst-list">
+            <li class="ar-inst-item">
+              <span class="ar-inst-n">01</span>
+              <span>Toca el botón <strong>"Ver en realidad aumentada"</strong> desde tu iPhone.</span>
+            </li>
+            <li class="ar-inst-item">
+              <span class="ar-inst-n">02</span>
+              <span>Apunta tu cámara a una superficie — el suelo, una mesa, un paisaje.</span>
+            </li>
+            <li class="ar-inst-item">
+              <span class="ar-inst-n">03</span>
+              <span>Toca la pantalla para colocar Aurea en tu espacio.</span>
+            </li>
+            <li class="ar-inst-item">
+              <span class="ar-inst-n">04</span>
+              <span>Fotografía o filma la obra en tu contexto y comparte con <strong>#OteroCiberEscultura</strong></span>
+            </li>
+          </ul>
+        </div>
+
+        <div style="margin-top: 32px;">
+          <!-- ENLACE .usdz REAL — reemplazar # con la URL del archivo -->
+          <a href="ar/Aurea_AR.usdz" rel="ar" class="btn-ar" style="display:inline-flex;">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <rect x="1" y="4" width="12" height="8" rx="1" stroke="currentColor" stroke-width="1"/>
+              <path d="M4 4V3a1 1 0 011-1h4a1 1 0 011 1v1" stroke="currentColor" stroke-width="1"/>
+              <circle cx="7" cy="8" r="1.5" fill="currentColor"/>
+            </svg>
+            Ver en realidad aumentada
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTEXTO PROPUESTO -->
+<section class="contexto" id="contexto">
+  <div class="section-inner">
+    <p class="section-label reveal">Capa 04 · Contexto propuesto</p>
+    <!-- Imagen principal: Caracas nocturna con estrellas -->
+    <div class="ctx-media reveal">
+      <img src="img/aurea/aurea_ctx_01.jpeg" alt="Aurea sobre Caracas nocturna · El Ávila · contexto propuesto por Ana Blanco">
+      <span class="ctx-overlay-label">Caracas · El Ávila · cielo estrellado</span>
+    </div>
+
+    <!-- Dos contextos adicionales -->
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:40px;" class="reveal">
+      <div class="ctx-media" style="margin-bottom:0; cursor:pointer;" onclick="openLightbox(this)">
+        <img src="img/aurea/aurea_ctx_02.jpeg" alt="Aurea frente al Ávila · escala monumental · Ana Blanco">
+        <span class="ctx-overlay-label">Escala monumental · pista de aterrizaje</span>
+      </div>
+      <div class="ctx-media" style="margin-bottom:0; cursor:pointer;" onclick="openLightbox(this)">
+        <img src="img/aurea/aurea_ctx_03.jpeg" alt="Aurea en el tejido urbano · escala humana · Caracas">
+        <span class="ctx-overlay-label">Escala humana · espacio público</span>
+      </div>
+    </div>
+
+    <p class="ctx-caption reveal">
+      El contexto propuesto para <em>Aurea</em> es Caracas misma — la ciudad donde nació, 
+      el Ávila como testigo permanente, el cielo nocturno del valle. 
+      Una obra concebida en el ciberespacio que reclama su lugar 
+      en el espacio público que siempre fue su destino.
+    </p>
+  </div>
+</section>
+
+<!-- PARTICIPACIÓN -->
+<section class="participacion" id="participar">
+  <div class="section-inner">
+    <p class="section-label reveal">Capa 05 · Participación</p>
+    <div class="part-box reveal">
+      <h2 class="part-title">¿Dónde colocarías<br>tú <em>Aurea</em>?</h2>
+      <p class="part-sub">
+        Descarga la escultura, colócala en tu espacio con realidad aumentada 
+        — tu sala, tu ciudad, un desierto, el cosmos — 
+        fotografía o filma el resultado y compártelo.
+      </p>
+
+      <div class="download-block">
+        <span class="download-label">Archivo de realidad aumentada</span>
+        <!-- 
+          ENLACE DE DESCARGA REAL:
+          Reemplazar href="#" con la URL del archivo .usdz
+          En iPhone Safari, rel="ar" abre la AR directo.
+          En otros dispositivos, descarga el archivo.
+        -->
+        <span class="download-filename">aurea.usdz</span>
+        <a href="ar/Aurea_AR.usdz" rel="ar" class="download-btn">
+          Descargar / Ver en AR
+        </a>
+      </div>
+
+      <div class="hashtag-row">
+        <span class="hashtag primary">#OteroCiberEscultura</span>
+        <span class="hashtag">#OteroEnMiMundo</span>
+        <span class="hashtag">#Otero2025</span>
+        <span class="hashtag">#ArteVenezolano</span>
+        <span class="hashtag">#RealidadAumentada</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERIE -->
+<div class="serie">
+  <div class="serie-inner">
+    <div class="serie-header">
+      <span class="serie-title">Serie completa · Ciber Esculturas 1987</span>
+      <span class="serie-count">13 obras · 1 Coloritmo</span>
+    </div>
+    <div class="serie-grid">
+      <!-- Obra actual activa -->
+      <a href="#" class="serie-item active">
+        <span class="serie-item-n">01</span>
+        <span class="serie-item-name">Aurea</span>
+      </a>
+      <!-- Las otras obras — inactive hasta que existan sus páginas -->
+      <span class="serie-item inactive"><span class="serie-item-n">02</span></span>
+      <span class="serie-item inactive"><span class="serie-item-n">03</span></span>
+      <span class="serie-item inactive"><span class="serie-item-n">04</span></span>
+      <span class="serie-item inactive"><span class="serie-item-n">05</span></span>
+      <span class="serie-item inactive"><span class="serie-item-n">06</span></span>
+      <span class="serie-item inactive"><span class="serie-item-n">07</span></span>
+      <span class="serie-item inactive"><span class="serie-item-n">08</span></span>
+      <span class="serie-item inactive"><span class="serie-item-n">09</span></span>
+      <span class="serie-item inactive"><span class="serie-item-n">10</span></span>
+      <span class="serie-item inactive"><span class="serie-item-n">11</span></span>
+      <span class="serie-item inactive"><span class="serie-item-n">12</span></span>
+      <span class="serie-item inactive" style="border-color:#1E1E42; background:#0D0D1A;">
+        <span class="serie-item-n" style="color:rgba(200,191,248,0.4);">13</span>
+      </span>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-left">
+      <p>Alejandro Otero · <span>Ciber Esculturas · 1987–2025</span></p>
+      <p>Producción y curaduría · <span>Ana Blanco</span></p>
+      <p>Museo Alejandro Otero · <span>Fundación Otero Pardo · Caracas</span></p>
+    </div>
+    <div class="footer-right">
+      <p>#OteroCiberEscultura</p>
+      <p>01 / 13 · Aurea</p>
+    </div>
+  </div>
+</footer>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()">Cerrar ×</button>
+  <img id="lightbox-img" src="" alt="">
+</div>
+
+<script>
+// ── SCROLL REVEAL ──
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+reveals.forEach(el => observer.observe(el));
+
+// ── LIGHTBOX ──
+function openLightbox(el) {
+  const img = el.querySelector('img');
+  if (!img) return; // no abre si es placeholder
+  const lb = document.getElementById('lightbox');
+  document.getElementById('lightbox-img').src = img.src;
+  lb.classList.add('open');
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeLightbox();
+});
+
+// ── NAV ACTIVE SCROLL ──
+window.addEventListener('scroll', () => {
+  const nav = document.querySelector('nav');
+  if (window.scrollY > 60) {
+    nav.style.backdropFilter = 'blur(12px)';
+    nav.style.background = 'rgba(7,7,13,0.92)';
+  } else {
+    nav.style.backdropFilter = 'blur(0px)';
+    nav.style.background = 'linear-gradient(to bottom, rgba(7,7,13,0.95) 0%, transparent 100%)';
+  }
+});
+</script>
+
+</body>
+</html>

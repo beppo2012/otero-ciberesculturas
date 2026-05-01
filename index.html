@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alejandro Otero — Ciber Esculturas 1987</title>
+<meta name="description" content="Exposición virtual de las 13 ciber esculturas de Alejandro Otero, creadas en el Centro Científico de IBM de Venezuela en 1987. Reconstruidas en realidad aumentada, 2025.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #07070D; --bg2: #0D0D1C; --border: #1E1E42;
+  --accent: #C8BFF8; --gold: #F5E9C4;
+  --text: #F0EEF8; --text2: rgba(240,238,248,0.55); --text3: rgba(240,238,248,0.28);
+  --mono: 'DM Mono', monospace; --serif: 'Cormorant Garamond', serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: var(--serif); overflow-x: hidden; }
+
+nav { padding: 24px 48px; display: flex; justify-content: space-between; align-items: center; border-bottom: 0.5px solid var(--border); }
+.nav-logo { font-family: var(--mono); font-size: 11px; letter-spacing: 0.18em; color: var(--text3); }
+.nav-logo span { color: var(--accent); }
+
+.hero { padding: 100px 48px 80px; max-width: 900px; }
+.eyebrow { font-family: var(--mono); font-size: 10px; letter-spacing: 0.22em; color: var(--accent); text-transform: uppercase; margin-bottom: 24px; }
+.hero h1 { font-size: clamp(48px, 7vw, 88px); font-weight: 300; line-height: 1; letter-spacing: -0.02em; margin-bottom: 12px; }
+.hero h1 em { font-style: italic; color: var(--gold); }
+.hero-sub { font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; color: var(--text3); text-transform: uppercase; margin-bottom: 32px; }
+.hero-desc { font-size: 17px; color: var(--text2); line-height: 1.8; max-width: 560px; }
+
+.obras { padding: 0 48px 100px; max-width: 1200px; }
+.obras-header { display: flex; justify-content: space-between; align-items: baseline; padding: 40px 0 24px; border-top: 0.5px solid var(--border); }
+.obras-title { font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; color: var(--accent); text-transform: uppercase; }
+.obras-count { font-family: var(--mono); font-size: 10px; color: var(--text3); }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; }
+.obra-card { background: var(--bg2); border: 0.5px solid var(--border); border-radius: 6px; overflow: hidden; text-decoration: none; display: block; transition: border-color 0.3s; }
+.obra-card:hover { border-color: var(--accent); }
+.obra-card.active { border-color: rgba(200,191,248,0.4); }
+.obra-card.coming { opacity: 0.4; pointer-events: none; }
+.obra-img { aspect-ratio: 4/3; background: var(--bg); overflow: hidden; position: relative; }
+.obra-img img { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; transition: opacity 0.3s, transform 0.4s; }
+.obra-card:hover .obra-img img { opacity: 1; transform: scale(1.04); }
+.obra-img-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+.obra-info { padding: 14px 16px; }
+.obra-n { font-family: var(--mono); font-size: 9px; letter-spacing: 0.16em; color: var(--text3); margin-bottom: 4px; }
+.obra-name { font-size: 15px; font-weight: 400; color: var(--text); line-height: 1.2; margin-bottom: 4px; }
+.obra-card.active .obra-name { color: var(--gold); }
+.obra-status { font-family: var(--mono); font-size: 9px; color: var(--text3); letter-spacing: 0.08em; }
+.obra-card.active .obra-status { color: var(--accent); }
+
+footer { padding: 32px 48px; border-top: 0.5px solid var(--border); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+footer p { font-family: var(--mono); font-size: 9px; letter-spacing: 0.12em; color: var(--text3); line-height: 2; text-transform: uppercase; }
+footer span { color: var(--text2); }
+
+@media (max-width: 768px) {
+  nav, .hero, .obras { padding-left: 24px; padding-right: 24px; }
+  .grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-logo">Alejandro Otero · <span>Ciber Esculturas</span></span>
+  <span style="font-family:var(--mono); font-size:10px; color:var(--text3); letter-spacing:0.1em;">1987–2025</span>
+</nav>
+
+<div class="hero">
+  <p class="eyebrow">Exposición virtual · IBM CADAM · Caracas 1987</p>
+  <h1>Alejandro<br><em>Otero</em></h1>
+  <p class="hero-sub">Ciber Esculturas · Centro Científico IBM · Venezuela</p>
+  <p class="hero-desc">
+    Trece esculturas virtuales creadas en el ciberespacio en 1987. 
+    Perdidas cuando el mainframe fue apagado en 1992. 
+    Reconstruidas en realidad aumentada, 2025.
+  </p>
+</div>
+
+<div class="obras">
+  <div class="obras-header">
+    <span class="obras-title">Las 13 obras</span>
+    <span class="obras-count">1 disponible · 12 próximamente</span>
+  </div>
+  <div class="grid">
+
+    <!-- 01 AUREA — activa -->
+    <a href="aurea.html" class="obra-card active">
+      <div class="obra-img">
+        <img src="img/aurea/aurea_ctx_01.jpeg" alt="Aurea">
+      </div>
+      <div class="obra-info">
+        <p class="obra-n">01 · 1987</p>
+        <p class="obra-name">Aurea</p>
+        <p class="obra-status">Disponible · AR activo</p>
+      </div>
+    </a>
+
+    <!-- 02–13 próximamente -->
+    <span class="obra-card coming"><div class="obra-img"><div class="obra-img-placeholder"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="rgba(200,191,248,0.15)" stroke-width="0.5"/></svg></div></div><div class="obra-info"><p class="obra-n">02</p><p class="obra-name">Satélite</p><p class="obra-status">Próximamente</p></div></span>
+    <span class="obra-card coming"><div class="obra-img"><div class="obra-img-placeholder"></div></div><div class="obra-info"><p class="obra-n">03</p><p class="obra-name">Orion</p><p class="obra-status">Próximamente</p></div></span>
+    <span class="obra-card coming"><div class="obra-img"><div class="obra-img-placeholder"></div></div><div class="obra-info"><p class="obra-n">04</p><p class="obra-name">Parabólica</p><p class="obra-status">Próximamente</p></div></span>
+    <span class="obra-card coming"><div class="obra-img"><div class="obra-img-placeholder"></div></div><div class="obra-info"><p class="obra-n">05</p><p class="obra-name">Tributo a Leon Baptista Alberti</p><p class="obra-status">Próximamente</p></div></span>
+    <span class="obra-card coming"><div class="obra-img"><div class="obra-img-placeholder"></div></div><div class="obra-info"><p class="obra-n">06</p><p class="obra-name">Semilla Circular</p><p class="obra-status">Próximamente</p></div></span>
+    <span class="obra-card coming"><div class="obra-img"><div class="obra-img-placeholder"></div></div><div class="obra-info"><p class="obra-n">07</p><p class="obra-name">Tea</p><p class="obra-status">Próximamente</p></div></span>
+    <span class="obra-card coming"><div class="obra-img"><div class="obra-img-placeholder"></div></div><div class="obra-info"><p class="obra-n">08</p><p class="obra-name">Bromilácea</p><p class="obra-status">Próximamente</p></div></span>
+    <span class="obra-card coming"><div class="obra-img"><div class="obra-img-placeholder"></div></div><div class="obra-info"><p class="obra-n">09</p><p class="obra-name">Doble Cilindro Vibrante</p><p class="obra-status">Próximamente</p></div></span>
+    <span class="obra-card coming"><div class="obra-img"><div class="obra-img-placeholder"></div></div><div class="obra-info"><p class="obra-n">10</p><p class="obra-name">De Cuatro en Cuatro</p><p class="obra-status">Próximamente</p></div></span>
+    <span class="obra-card coming"><div class="obra-img"><div class="obra-img-placeholder"></div></div><div class="obra-info"><p class="obra-n">11</p><p class="obra-name">De Dos en Dos</p><p class="obra-status">Próximamente</p></div></span>
+    <span class="obra-card coming"><div class="obra-img"><div class="obra-img-placeholder"></div></div><div class="obra-info"><p class="obra-n">12</p><p class="obra-name">Aro</p><p class="obra-status">Próximamente</p></div></span>
+    <span class="obra-card coming" style="border-color:#1E1E42; background:#0D0D1A;"><div class="obra-img"><div class="obra-img-placeholder"></div></div><div class="obra-info"><p class="obra-n">13 · Inédita</p><p class="obra-name" style="color:rgba(200,191,248,0.5);">Stella Aurea</p><p class="obra-status">Próximamente</p></div></span>
+  </div>
+</div>
+
+<footer>
+  <div>
+    <p>Alejandro Otero · <span>Ciber Esculturas · 1987–2025</span></p>
+    <p>Producción y curaduría · <span>Ana Blanco</span></p>
+  </div>
+  <div style="text-align:right;">
+    <p>Museo Alejandro Otero · <span>Fundación Otero Pardo</span></p>
+    <p>#OteroCiberEscultura</p>
+  </div>
+</footer>
+
+</body>
+</html>
